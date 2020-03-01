@@ -1,0 +1,2 @@
+.attr("fill", d => color(d.data.group)
+https://www.dashingd3js.com/creating-svg-elements-based-on-data

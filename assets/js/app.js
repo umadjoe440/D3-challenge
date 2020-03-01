@@ -1,6 +1,6 @@
 // @TODO: YOUR CODE HERE!
 var svgWidth = 960;
-var svgHeight = 500;
+var svgHeight = 600;
 
 var margin = {
   top: 20,
@@ -24,7 +24,6 @@ var chartGroup = svg.append("g")
 // Import Data
 d3.csv("assets/data/data.csv").then(function(censusData) {
 
-    console.log(censusData);
 
     // Step 1: Parse Data/Cast as numbers
     // ==============================
@@ -35,17 +34,15 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
         data.obesity = +data.obesity;
         data.age = +data.age;
         data.income = +data.income;
-
-        console.log(data);
       });
 
     // Step 2: Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-            .domain([0, d3.max(censusData, d => d.poverty)])
+            .domain([d3.min(censusData, d => d.poverty), d3.max(censusData, d => d.poverty)])
             .range([0, width]);
     var yLinearScale = d3.scaleLinear()
-            .domain([0, d3.max(censusData, d => d.healthcare)])
+            .domain([d3.min(censusData, d => d.healthcare), d3.max(censusData, d => d.healthcare)])
             .range([height, 0]);
 
 
@@ -70,15 +67,31 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
        .append("circle")
        .attr("cx", d => xLinearScale(d.poverty))
        .attr("cy", d => yLinearScale(d.healthcare))
-       .attr("r", "10")
+       .attr("r", "15")
        .attr("fill", "lightblue")
        .attr("stroke-width", "1")
-       .attr("stroke", "black");
+       .attr("stroke", "black");       
+
+       
+    console.log(censusData);   
+    //Add the SVG Text Element to the svgContainer
+    var circleText = chartGroup.selectAll("text")
+                        .data(censusData)
+                        .enter()
+                        .append("text")
+                        .attr("x", d => xLinearScale(d.poverty) - 6)
+                        .attr("y", d => yLinearScale(d.healthcare) + 4)
+                        .text( function (d) { return  d.abbr;  })
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "10px")
+                        .attr("fill", "red");       
+
+     
     // Step 6: Initialize tool tip
     // ==============================
     var toolTip = d3.tip()
             .attr("class", "tooltip")
-            .offset([80, -60])
+            .offset([40, -20])
             .html(function(d) {
               return (`<strong>${d.state}<hr><strong>Poverty: ${d.poverty}<br><strong>Healthcare: ${d.healthcare}`);
             });
